@@ -2,13 +2,13 @@
 
 A reusable starting point for AI-assisted projects, split into three halves that work as a set:
 
-## Requirements — `.claude/skills/gather-requirements/`
+## Requirements — `.claude/skills/gather-requirements/` and `.github/prompts/gather-requirements.prompt.md`
 
-A Claude Skill. Invoke it before any design or code work begins, whenever the ask is a new website/app and not already a full spec. It interviews the user in plain language (no assumed web/design jargon) and writes `website-spec.md` at the new project's repo root. This is the front door for anyone who doesn't already know the vocabulary `project-planner`'s own questions use (monorepo, realtime, auth/roles, etc.) — run it first for any new project started from a vague idea.
+Use the Claude Skill or the Copilot prompt before any design or code work begins, whenever the ask is a new website/app and not already a full spec. Both interview in plain language (no assumed web/design jargon), gather missing requirements adaptively, and write `website-spec.md` at the new project's repo root.
 
-## Planner — `.claude/skills/project-planner/`
+## Planner — `.claude/skills/project-planner/` and `.github/prompts/project-planner.prompt.md`
 
-A Claude Skill. Invoke it (from Claude Code, in a new or existing project) to turn a rough idea — or, better, the `website-spec.md` that `gather-requirements` produced — into a complete `docs/design/` package: vision, architecture, data model, public API, atomic implementation steps, and a `STATUS.md` progress tracker — with no placeholders and no contradictions between documents. This is the expensive, high-capability pass; run it once per project (or per major subsystem), not per session.
+Use the Claude Skill or the Copilot prompt to turn a rough idea — or, better, the `website-spec.md` from the requirements pass — into a complete `docs/design/` package: vision, architecture, data model, public API, atomic implementation steps, and a `STATUS.md` progress tracker, with no placeholders and no contradictions.
 
 ## Checklist — `.claude/skills/web-engineering-checklist/`
 
@@ -28,15 +28,18 @@ If you edit the conventions or protocol in one tool's files, update the other's 
 
 ## Installing this Waypoint package
 
-`gather-requirements` and `project-planner` do their job *before* a project repo is really set up, and their output (`website-spec.md`, `docs/design/`) doesn't depend on which tool produced it — install these two once as user-level Claude Skills (`~/.claude/skills/`) so they're available the moment an idea comes up, rather than copying them into every new repo.
+`gather-requirements` and `project-planner` do their job *before* a project repo is really set up, and their output (`website-spec.md`, `docs/design/`) doesn't depend on which tool produced it.
+
+- Claude path: install the two skills once as user-level Claude Skills (`~/.claude/skills/`) so they're available the moment an idea comes up.
+- Copilot path: use `.github/prompts/gather-requirements.prompt.md` and `.github/prompts/project-planner.prompt.md` directly in the target repo.
 
 Everything else — `CLAUDE.md`, `.claude/commands/`, `.claude/skills/web-engineering-checklist/`, and `.github/` — is per-project: copy it into each new project's repo. The implementer protocol reads and writes that specific repo's `docs/design/STATUS.md`, and Copilot needs the checklist reference files physically present in the repo to read them (it can't invoke a Skill directly).
 
 ## Using Waypoint for a new project
 
-1. Describe the idea to Claude. The `gather-requirements` skill interviews you and writes `website-spec.md` at the new project's repo root.
+1. Describe the idea to Claude or Copilot. Run the requirements pass (`gather-requirements` skill or `.github/prompts/gather-requirements.prompt.md`) to produce `website-spec.md` at repo root.
 2. Copy `.claude/commands/`, `.claude/skills/web-engineering-checklist/`, `.github/`, and `CLAUDE.md` into that repo (see "Installing this Waypoint package" above).
-3. Run the `project-planner` skill to generate `docs/design/` — it reads `website-spec.md` automatically if present.
+3. Run the planning pass (`project-planner` skill or `.github/prompts/project-planner.prompt.md`) to generate `docs/design/` — it reads `website-spec.md` automatically if present.
 4. Review the generated `tradeoffs.md` and `mvp-implementation-plan.md` — this is the point to object before implementation starts.
 5. Run `/next-step` repeatedly (one session per step) to implement. Run `/review-step` after any step you want a second look at before moving on.
 6. Once `STATUS.md` is fully checked, use `/small-change` for further small additions or fixes rather than re-running `project-planner`.

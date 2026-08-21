@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Review the current diff (the most recently completed implementation step) against the project's review checklist. Reports findings; does not rewrite wholesale.
 ---
 

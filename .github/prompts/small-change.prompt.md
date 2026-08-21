@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Make one small, self-contained addition or fix to a project whose MVP is already complete, without a full project-planner replan.
 ---
 

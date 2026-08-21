@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 description: Implement the next unchecked step from docs/design/mvp-implementation-plan.md, per the STATUS.md protocol.
 ---
 

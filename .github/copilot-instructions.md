@@ -6,7 +6,9 @@ This project is implemented incrementally by a lightweight model (cheap API mode
 
 1. Read `docs/design/STATUS.md`. Find the first unchecked step.
 2. Read only that step's entry in `docs/design/mvp-implementation-plan.md`, plus any doc it names by name (e.g. `public-api.md`, `data-model.md`). Do not read the entire `docs/design/` corpus — it isn't necessary and wastes context.
-3. If `STATUS.md` or the named step doesn't exist, or the repo has no `docs/design/` directory, stop and say so rather than guessing at scope.
+3. If `STATUS.md` or the named step doesn't exist, or the repo has no `docs/design/` directory:
+	- If the user is asking to start a new project or plan first, run `.github/prompts/gather-requirements.prompt.md` (to produce `website-spec.md`) and then `.github/prompts/project-planner.prompt.md` (to produce `docs/design/`).
+	- Otherwise stop and say the planning package is missing rather than guessing at scope.
 
 ## While implementing
 
