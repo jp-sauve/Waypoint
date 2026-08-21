@@ -1,3 +1,5 @@
+<img src="logo.svg" alt="Waypoint logo" width="120">
+
 # Waypoint
 
 A reusable starting point for AI-assisted projects, split into three halves that work as a set:
