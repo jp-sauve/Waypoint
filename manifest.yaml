@@ -1,5 +1,5 @@
 name: waypoint
-version: 0.1.0
+version: 0.4.0
 description: >-
   A reusable starting point for AI-assisted projects: requirements gathering,
   project planning, an engineering checklist, and an implementer protocol,
@@ -31,6 +31,12 @@ tokens:
   "artifact:engineering-checklist":
     claude: "the `web-engineering-checklist` Skill"
     copilot: "the checklist references at `.waypoint/checklist/references/` (`owasp-top10.md`, `wcag-checklist.md`, `privacy-checklist.md`)"
+  "artifact:ui-components":
+    claude: "the `ui-component-references` Skill"
+    copilot: "the UI component references at `.waypoint/ui-components/references/`"
+  "artifact:layout-patterns":
+    claude: "the `layout-pattern-references` Skill"
+    copilot: "the layout pattern references at `.waypoint/layout-patterns/references/`"
   "command:next-step":
     claude: "`/next-step`"
     copilot: "`.github/prompts/next-step.prompt.md`"
@@ -107,6 +113,83 @@ artifacts:
         type: references
         installPath: null
         bundledFilesInstallPath: ".waypoint/checklist/references"
+
+  - id: ui-components
+    kind: skill
+    name: ui-component-references
+    description: >-
+      Verified, accessible reference implementations (modal, dropdown menu, toast,
+      scroll-behavior header variants) for both React and vanilla HTML/CSS/JS projects,
+      to adapt instead of reinventing focus management and keyboard handling from
+      scratch.
+    source: methodology/ui-components.md
+    bundledFiles:
+      - methodology/ui-components/references/modal.md
+      - methodology/ui-components/references/modal-vanilla.md
+      - methodology/ui-components/references/dropdown-menu.md
+      - methodology/ui-components/references/dropdown-menu-vanilla.md
+      - methodology/ui-components/references/toast.md
+      - methodology/ui-components/references/toast-vanilla.md
+      - methodology/ui-components/references/header-static.md
+      - methodology/ui-components/references/header-fixed.md
+      - methodology/ui-components/references/header-shrinking.md
+    installScope: project
+    platforms:
+      claude:
+        type: skill
+        installPath: ".claude/skills/ui-component-references"
+        # references live at the shared neutral path below, not bundled under the
+        # skill folder, so Claude and Copilot read the exact same installed files.
+        bundledFilesInstallPath: ".waypoint/ui-components/references"
+      copilot:
+        type: references
+        installPath: null
+        bundledFilesInstallPath: ".waypoint/ui-components/references"
+
+  - id: layout-patterns
+    kind: skill
+    name: layout-pattern-references
+    description: >-
+      Reference implementations of page-level layout architecture across two axes:
+      page flow (document flow, hard/soft-snap and overlapping viewport sections,
+      paged/slides, an SPA application shell, a sticky-panel scrolling narrative, a
+      pan/zoom canvas, a progressively-loaded feed) and spatial composition
+      (single/multi-column, grid variants incl. offset and masonry, a uniform flex
+      row, bento, sidebar + content, layered, asymmetric), to adapt instead of
+      reinventing scroll mechanics or layout structure from scratch.
+    source: methodology/layout-patterns.md
+    bundledFiles:
+      - methodology/layout-patterns/references/document-flow.md
+      - methodology/layout-patterns/references/viewport-sections-hard-snap.md
+      - methodology/layout-patterns/references/viewport-sections-soft-snap.md
+      - methodology/layout-patterns/references/viewport-sections-overlapping.md
+      - methodology/layout-patterns/references/paged-slides.md
+      - methodology/layout-patterns/references/spa-shell.md
+      - methodology/layout-patterns/references/sticky-split-scroll.md
+      - methodology/layout-patterns/references/canvas.md
+      - methodology/layout-patterns/references/feed.md
+      - methodology/layout-patterns/references/single-column.md
+      - methodology/layout-patterns/references/multi-column.md
+      - methodology/layout-patterns/references/grid-normal.md
+      - methodology/layout-patterns/references/grid-offset.md
+      - methodology/layout-patterns/references/grid-masonry.md
+      - methodology/layout-patterns/references/uniform-flex-row.md
+      - methodology/layout-patterns/references/bento.md
+      - methodology/layout-patterns/references/sidebar-content.md
+      - methodology/layout-patterns/references/layered.md
+      - methodology/layout-patterns/references/asymmetric.md
+    installScope: project
+    platforms:
+      claude:
+        type: skill
+        installPath: ".claude/skills/layout-pattern-references"
+        # references live at the shared neutral path below, not bundled under the
+        # skill folder, so Claude and Copilot read the exact same installed files.
+        bundledFilesInstallPath: ".waypoint/layout-patterns/references"
+      copilot:
+        type: references
+        installPath: null
+        bundledFilesInstallPath: ".waypoint/layout-patterns/references"
 
   - id: implementer-instructions
     kind: instructions

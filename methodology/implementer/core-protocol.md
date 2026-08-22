@@ -21,6 +21,8 @@ implementer's job is to execute that plan one step at a time, not to re-plan it.
 - Add tests for new functionality: at minimum the happy path and one error path, per the test conventions. Do not add snapshot tests or exhaustive edge-case suites unless the step asks for it.
 - Include error handling and loading/empty states for anything user-facing; do not add speculative error handling for cases that can't occur.
 - Responsive/accessible by default for anything UI-facing: labels on interactive elements, focus visible, reduced-motion fallback for animation, mobile-first layout. Run {{artifact:engineering-checklist}} on route/DB/auth/UI diffs rather than re-deriving its checks by hand.
+- Before writing new interaction logic for a modal, dropdown/menu, toast, or header from scratch, check {{artifact:ui-components}} and adapt an applicable one instead — see its own "adapt to this project" list for the values (z-index, design tokens, portal target) it deliberately leaves generic.
+- Before deciding how a new page or route scrolls or navigates (snapped viewport sections, a paged/slide sequence, an SPA content region, a sticky split-scroll narrative, a pan/zoom canvas, or a progressively-loaded feed) or how content is arranged within a region (a grid, bento, sidebar + content, layered, asymmetric), check {{artifact:layout-patterns}} and adapt an applicable one instead of inventing the layout mechanics from scratch — plain document flow and a single column remain the defaults; only depart from them when the content calls for it.
 
 ## After implementing a step
 
