@@ -3,8 +3,9 @@
 # Waypoint
 
 A reusable starting point for AI-assisted projects: requirements gathering, project
-planning, an engineering checklist, and an implementer protocol — installable into
-Claude Code and/or GitHub Copilot.
+planning, an engineering checklist, verified UI component and layout pattern
+references, and an implementer protocol — installable into Claude Code and/or GitHub
+Copilot.
 
 Waypoint's own canonical source is plain, platform-neutral Markdown under
 `methodology/` and `commands/`. It does **not** live under `.claude/` or `.github/` —

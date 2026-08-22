@@ -2,8 +2,9 @@ name: waypoint
 version: 0.4.0
 description: >-
   A reusable starting point for AI-assisted projects: requirements gathering,
-  project planning, an engineering checklist, and an implementer protocol,
-  installable into Claude Code and/or GitHub Copilot.
+  project planning, an engineering checklist, verified UI component and layout
+  pattern references, and an implementer protocol, installable into Claude Code
+  and/or GitHub Copilot.
 
 platforms:
   claude:
