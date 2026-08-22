@@ -25,6 +25,19 @@ distributable Skills/commands as if they were this repo's live configuration. Se
 - **Checklist** (`methodology/engineering-checklist.md` + `methodology/engineering-checklist/references/`)
   — security (OWASP)/privacy (GDPR-CCPA)/accessibility (WCAG)/performance/reliability
   checks, run throughout implementation rather than once up front.
+- **UI component references** (`methodology/ui-components.md` +
+  `methodology/ui-components/references/`) — verified, accessible reference
+  implementations (modal, dropdown menu, toast, scroll-behavior header variants), each
+  with a vanilla HTML/CSS/JS counterpart alongside the React one, to adapt instead of
+  reinventing focus management and keyboard handling from scratch.
+- **Layout & page pattern references** (`methodology/layout-patterns.md` +
+  `methodology/layout-patterns/references/`) — verified implementations across two
+  axes: page flow (document flow, snapped/overlapping viewport sections,
+  paged/slides, an SPA application shell, a sticky split-scroll narrative, a pan/zoom
+  canvas, a progressively-loaded feed) and spatial composition (single/multi-column,
+  grid variants incl. offset and masonry, a uniform flex row, bento, sidebar +
+  content, layered, asymmetric), to adapt instead of reinventing scroll mechanics or
+  layout structure from scratch.
 - **Implementer** (`methodology/implementer/*.md` + `commands/*.md`) — the always-on
   repo conventions and the `STATUS.md` protocol that drives a project one step at a
   time: `next-step`, `review-step`, `small-change`.

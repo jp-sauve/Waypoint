@@ -9,7 +9,7 @@ Use this after `docs/design/STATUS.md` shows every MVP step checked. For anythin
 3. If the change touches an existing signature, endpoint, component prop, or schema, check it against `docs/design/public-api.md` / `docs/design/data-model.md` first. If the change alters either, update the doc in the same commit — don't let them drift.
 4. Implement the change, patching minimally per the implementer's conventions (stack, error handling, accessibility, API route, React component, and test conventions all still apply).
 5. Add tests for the change (happy path plus at least one error path), per the test conventions.
-6. If the change touches an API route, DB query, auth, or user-facing UI, run {{artifact:engineering-checklist}} before considering it done.
+6. If the change touches an API route, DB query, auth, or user-facing UI, run {{artifact:engineering-checklist}} before considering it done. For a new modal, dropdown, toast, or header, check {{artifact:ui-components}} before writing the interaction logic from scratch. For a new page/route's scroll or navigation behavior (snapped sections, a paged sequence, a canvas, a feed, etc.) or a new region's spatial composition (a grid, bento, sidebar + content, etc.), check {{artifact:layout-patterns}} before writing the layout mechanics from scratch.
 7. Run the change's tests and confirm they pass. Do not mark it done on an assumption.
 8. Add a one-line entry (date + short description) to the "Post-MVP Changes" section of `docs/design/STATUS.md`, and commit with message `Change: <short title>` — a distinct prefix from `Step N:` commits, since this isn't part of the original plan.
 9. Stop. One change per session, same discipline as {{command:next-step}}.
