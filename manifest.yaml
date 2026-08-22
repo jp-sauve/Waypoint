@@ -1,0 +1,191 @@
+name: waypoint
+version: 0.1.0
+description: >-
+  A reusable starting point for AI-assisted projects: requirements gathering,
+  project planning, an engineering checklist, and an implementer protocol,
+  installable into Claude Code and/or GitHub Copilot.
+
+platforms:
+  claude:
+    displayName: Claude Code
+    globalInstallSupported: true
+    # Root that dist/claude/global/** installPaths (e.g. "skills/gather-requirements")
+    # are resolved against — NOT ~/.claude/skills, since installPath already includes
+    # the "skills/" segment (matches how project-scope installPaths already include
+    # their own ".claude/" prefix, e.g. ".claude/skills/web-engineering-checklist").
+    globalInstallRoot: "~/.claude"
+  copilot:
+    displayName: GitHub Copilot
+    globalInstallSupported: false
+
+# Tokens used in methodology/**.md and commands/**.md bodies, resolved per platform
+# at build time by adapters/lib/template.ts. Every token must have an entry here for
+# every platform — the build fails otherwise (see tests/build.test.ts).
+tokens:
+  "artifact:requirements-gathering":
+    claude: "the `gather-requirements` Skill"
+    copilot: "`.github/prompts/gather-requirements.prompt.md`"
+  "artifact:project-planning":
+    claude: "the `project-planner` Skill"
+    copilot: "`.github/prompts/project-planner.prompt.md`"
+  "artifact:engineering-checklist":
+    claude: "the `web-engineering-checklist` Skill"
+    copilot: "the checklist references at `.waypoint/checklist/references/` (`owasp-top10.md`, `wcag-checklist.md`, `privacy-checklist.md`)"
+  "command:next-step":
+    claude: "`/next-step`"
+    copilot: "`.github/prompts/next-step.prompt.md`"
+  "command:review-step":
+    claude: "`/review-step`"
+    copilot: "`.github/prompts/review-step.prompt.md`"
+  "command:small-change":
+    claude: "`/small-change`"
+    copilot: "`.github/prompts/small-change.prompt.md`"
+
+artifacts:
+  - id: requirements-gathering
+    kind: skill
+    name: gather-requirements
+    description: >-
+      Interviews the user to gather requirements for a new website before any design
+      or code work begins.
+    source: methodology/requirements-gathering.md
+    installScope: global
+    platforms:
+      claude:
+        type: skill
+        installPath: "skills/gather-requirements"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/gather-requirements.prompt.md"
+
+  - id: project-planning
+    kind: skill
+    name: project-planner
+    description: >-
+      Generate a complete docs/design/ planning package for a new software project
+      before implementation begins.
+    source: methodology/project-planning.md
+    bundledFiles:
+      - methodology/project-planning/templates/step-format.md
+      - methodology/project-planning/templates/status-template.md
+      - methodology/project-planning/templates/review-checklist.md
+    installScope: global
+    platforms:
+      claude:
+        type: skill
+        installPath: "skills/project-planner"
+        bundledFilesInstallPath: "skills/project-planner/templates"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/project-planner.prompt.md"
+        # per-project, not global (Copilot has no global mechanism) — see §11 risk 6
+        # in docs/restructure-plan.md for why this is a shared neutral path rather than
+        # a Claude-namespaced one.
+        bundledFilesInstallPath: ".waypoint/planning-templates"
+
+  - id: engineering-checklist
+    kind: skill
+    name: web-engineering-checklist
+    description: >-
+      Engineering standards checklist for Next.js + database web apps, covering
+      security (OWASP), privacy (GDPR/CCPA), accessibility (WCAG), performance, and
+      reliability.
+    source: methodology/engineering-checklist.md
+    bundledFiles:
+      - methodology/engineering-checklist/references/owasp-top10.md
+      - methodology/engineering-checklist/references/privacy-checklist.md
+      - methodology/engineering-checklist/references/wcag-checklist.md
+    installScope: project
+    platforms:
+      claude:
+        type: skill
+        installPath: ".claude/skills/web-engineering-checklist"
+        # references live at the shared neutral path below, not bundled under the
+        # skill folder, so Claude and Copilot read the exact same installed files.
+        bundledFilesInstallPath: ".waypoint/checklist/references"
+      copilot:
+        type: references
+        installPath: null
+        bundledFilesInstallPath: ".waypoint/checklist/references"
+
+  - id: implementer-instructions
+    kind: instructions
+    description: Always-on repo conventions and the STATUS.md implementer protocol.
+    installScope: project
+    platforms:
+      claude:
+        type: always-on
+        installPath: "CLAUDE.md"
+        includes: [core-protocol, stack-conventions, api-routes, react-components, tests]
+      copilot:
+        type: always-on
+        installPath: ".github/copilot-instructions.md"
+        includes: [core-protocol, stack-conventions]
+
+  - id: api-routes-instructions
+    kind: scoped-instructions
+    source: methodology/implementer/api-routes.md
+    applyTo: "**/api/**/*.ts,**/routes/**/*.ts,**/*.route.ts"
+    installScope: project
+    platforms:
+      copilot:
+        type: scoped
+        installPath: ".github/instructions/api-routes.instructions.md"
+      # claude: none — folded into CLAUDE.md via implementer-instructions above,
+      # since Claude Code has no path-scoped auto-attach mechanism.
+
+  - id: react-components-instructions
+    kind: scoped-instructions
+    source: methodology/implementer/react-components.md
+    applyTo: "**/*.tsx"
+    installScope: project
+    platforms:
+      copilot:
+        type: scoped
+        installPath: ".github/instructions/react-components.instructions.md"
+
+  - id: tests-instructions
+    kind: scoped-instructions
+    source: methodology/implementer/tests.md
+    applyTo: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx"
+    installScope: project
+    platforms:
+      copilot:
+        type: scoped
+        installPath: ".github/instructions/tests.instructions.md"
+
+  - id: next-step-command
+    kind: command
+    source: commands/next-step.md
+    installScope: project
+    platforms:
+      claude:
+        type: command
+        installPath: ".claude/commands/next-step.md"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/next-step.prompt.md"
+
+  - id: review-step-command
+    kind: command
+    source: commands/review-step.md
+    installScope: project
+    platforms:
+      claude:
+        type: command
+        installPath: ".claude/commands/review-step.md"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/review-step.prompt.md"
+
+  - id: small-change-command
+    kind: command
+    source: commands/small-change.md
+    installScope: project
+    platforms:
+      claude:
+        type: command
+        installPath: ".claude/commands/small-change.md"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/small-change.prompt.md"
