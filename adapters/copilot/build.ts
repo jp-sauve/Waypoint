@@ -40,7 +40,7 @@ export function buildCopilot(manifest: Manifest, canonicalRoot: string): BuiltFi
         const body = read(`methodology/implementer/${fragment}.md`);
         return stripAppliesToLine(resolveTokens(body, "copilot", manifest.tokens)).trimEnd();
       });
-      files.push({ path: `${scopeDir}/${cfg.installPath}`, content: sections.join("\n\n---\n\n") + "\n" });
+      files.push({ path: `${scopeDir}/${cfg.installPath}`, content: sections.join("\n\n---\n\n") + "\n", merge: true });
     } else if (cfg.type === "scoped") {
       const body = stripAppliesToLine(resolveTokens(read(artifact.source!), "copilot", manifest.tokens));
       const fm = frontmatter({ applyTo: artifact.applyTo! });

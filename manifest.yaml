@@ -1,16 +1,16 @@
 name: waypoint
-version: 0.4.0
+version: 0.5.0
 description: >-
-  A reusable starting point for AI-assisted projects: requirements gathering,
-  project planning, an engineering checklist, verified UI component and layout
-  pattern references, and an implementer protocol, installable into Claude Code
-  and/or GitHub Copilot.
+  A reusable starting point for AI-assisted projects: requirements gathering for a
+  new project or codebase inspection for an existing one, project planning, an
+  engineering checklist, verified UI component and layout pattern references, and an
+  implementer protocol, installable into Claude Code and/or GitHub Copilot.
 
 platforms:
   claude:
     displayName: Claude Code
     globalInstallSupported: true
-    # Root that dist/claude/global/** installPaths (e.g. "skills/gather-requirements")
+    # Root that dist/claude/global/** installPaths (e.g. "skills/start-project")
     # are resolved against — NOT ~/.claude/skills, since installPath already includes
     # the "skills/" segment (matches how project-scope installPaths already include
     # their own ".claude/" prefix, e.g. ".claude/skills/web-engineering-checklist").
@@ -23,9 +23,12 @@ platforms:
 # at build time by adapters/lib/template.ts. Every token must have an entry here for
 # every platform — the build fails otherwise (see tests/build.test.ts).
 tokens:
-  "artifact:requirements-gathering":
-    claude: "the `gather-requirements` Skill"
-    copilot: "`.github/prompts/gather-requirements.prompt.md`"
+  "artifact:start-project":
+    claude: "the `start-project` Skill"
+    copilot: "`.github/prompts/start-project.prompt.md`"
+  "artifact:extend-project":
+    claude: "the `extend-project` Skill"
+    copilot: "`.github/prompts/extend-project.prompt.md`"
   "artifact:project-planning":
     claude: "the `project-planner` Skill"
     copilot: "`.github/prompts/project-planner.prompt.md`"
@@ -49,21 +52,38 @@ tokens:
     copilot: "`.github/prompts/small-change.prompt.md`"
 
 artifacts:
-  - id: requirements-gathering
+  - id: start-project
     kind: skill
-    name: gather-requirements
+    name: start-project
     description: >-
       Interviews the user to gather requirements for a new website before any design
       or code work begins.
-    source: methodology/requirements-gathering.md
+    source: methodology/start-project.md
     installScope: global
     platforms:
       claude:
         type: skill
-        installPath: "skills/gather-requirements"
+        installPath: "skills/start-project"
       copilot:
         type: prompt
-        installPath: ".github/prompts/gather-requirements.prompt.md"
+        installPath: ".github/prompts/start-project.prompt.md"
+
+  - id: extend-project
+    kind: skill
+    name: extend-project
+    description: >-
+      Inspects an existing project's codebase — stack, architecture, conventions,
+      extension points — and writes project-context.md so a new feature or subsystem
+      can be planned against what's actually there instead of assumed from scratch.
+    source: methodology/extend-project.md
+    installScope: global
+    platforms:
+      claude:
+        type: skill
+        installPath: "skills/extend-project"
+      copilot:
+        type: prompt
+        installPath: ".github/prompts/extend-project.prompt.md"
 
   - id: project-planning
     kind: skill

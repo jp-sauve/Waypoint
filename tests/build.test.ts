@@ -29,8 +29,9 @@ describe("build", () => {
     const files = walk(path.join(distRoot, "claude")).sort();
     expect(files).toEqual(
       [
-        "global/skills/gather-requirements/SKILL.md",
+        "global/skills/extend-project/SKILL.md",
         "global/skills/project-planner/SKILL.md",
+        "global/skills/start-project/SKILL.md",
         "global/skills/project-planner/templates/review-checklist.md",
         "global/skills/project-planner/templates/status-template.md",
         "global/skills/project-planner/templates/step-format.md",
@@ -85,11 +86,12 @@ describe("build", () => {
         "project/.github/instructions/api-routes.instructions.md",
         "project/.github/instructions/react-components.instructions.md",
         "project/.github/instructions/tests.instructions.md",
-        "project/.github/prompts/gather-requirements.prompt.md",
+        "project/.github/prompts/extend-project.prompt.md",
         "project/.github/prompts/next-step.prompt.md",
         "project/.github/prompts/project-planner.prompt.md",
         "project/.github/prompts/review-step.prompt.md",
         "project/.github/prompts/small-change.prompt.md",
+        "project/.github/prompts/start-project.prompt.md",
         "project/.waypoint/checklist/references/owasp-top10.md",
         "project/.waypoint/checklist/references/privacy-checklist.md",
         "project/.waypoint/checklist/references/wcag-checklist.md",

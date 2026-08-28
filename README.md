@@ -2,10 +2,10 @@
 
 # Waypoint
 
-A reusable starting point for AI-assisted projects: requirements gathering, project
-planning, an engineering checklist, verified UI component and layout pattern
-references, and an implementer protocol — installable into Claude Code and/or GitHub
-Copilot.
+A reusable starting point for AI-assisted projects: requirements gathering for a new
+project or codebase inspection for an existing one, project planning, an engineering
+checklist, verified UI component and layout pattern references, and an implementer
+protocol — installable into Claude Code and/or GitHub Copilot.
 
 Waypoint's own canonical source is plain, platform-neutral Markdown under
 `methodology/` and `commands/`. It does **not** live under `.claude/` or `.github/` —
@@ -16,13 +16,17 @@ distributable Skills/commands as if they were this repo's live configuration. Se
 
 ## What's in the box
 
-- **Requirements** (`methodology/requirements-gathering.md`) — interviews the user
-  before any design or code work begins, and writes `website-spec.md` at the target
-  project's repo root.
+- **Start Project** (`methodology/start-project.md`) — interviews the user before any
+  design or code work begins, and writes `website-spec.md` at the target project's
+  repo root.
+- **Extend Project** (`methodology/extend-project.md`) — for a project that already
+  has code, inspects it (stack, architecture, conventions, extension points) and
+  writes `project-context.md` at the target project's repo root, so a new feature or
+  subsystem is planned against what's actually there instead of assumed from scratch.
 - **Planner** (`methodology/project-planning.md` + `methodology/project-planning/templates/`)
-  — turns a rough idea, or better, `website-spec.md`, into a complete `docs/design/`
-  package: vision, architecture, data model, public API, atomic implementation steps,
-  and a `STATUS.md` progress tracker.
+  — turns a rough idea, or better, `website-spec.md` or `project-context.md`, into a
+  complete `docs/design/` package: vision, architecture, data model, public API,
+  atomic implementation steps, and a `STATUS.md` progress tracker.
 - **Checklist** (`methodology/engineering-checklist.md` + `methodology/engineering-checklist/references/`)
   — security (OWASP)/privacy (GDPR-CCPA)/accessibility (WCAG)/performance/reliability
   checks, run throughout implementation rather than once up front.
@@ -59,14 +63,14 @@ dist/{claude,copilot}/**                         (rendered, platform-shaped file
 ```
 
 `manifest.yaml` is the single registry of what each artifact is, which platform(s) it
-targets, and exactly where it installs — see it directly for the full list. Two
-artifacts (`requirements-gathering`, `project-planning`) install once, globally, for
-Claude Code (`~/.claude/skills/`), since they're useful before a project repo even
-exists; GitHub Copilot has no global mechanism, so its version of everything installs
-per-project. The engineering checklist's deep-dive reference files install once, at a
-platform-neutral `.waypoint/checklist/references/` path, so both a Claude Skill and a
-Copilot prompt read the exact same installed files rather than two separately
-duplicated copies.
+targets, and exactly where it installs — see it directly for the full list. Three
+artifacts (`start-project`, `extend-project`, `project-planning`) install once,
+globally, for Claude Code (`~/.claude/skills/`), since they're useful before a project
+repo even exists (or before Waypoint is installed into one); GitHub Copilot has no
+global mechanism, so its version of everything installs per-project. The engineering
+checklist's deep-dive reference files install once, at a platform-neutral
+`.waypoint/checklist/references/` path, so both a Claude Skill and a Copilot prompt
+read the exact same installed files rather than two separately duplicated copies.
 
 ## Using Waypoint on your own machine
 
@@ -97,7 +101,7 @@ clone of this repo.
 ## Using Waypoint for a new project
 
 1. Describe the idea to Claude or Copilot. Run the requirements pass (the
-   `gather-requirements` Skill, or Copilot's `gather-requirements.prompt.md`) to
+   `start-project` Skill, or Copilot's `start-project.prompt.md`) to
    produce `website-spec.md` at repo root.
 2. Install Waypoint into that repo (see above).
 3. Run the planning pass (the `project-planner` Skill, or Copilot's
@@ -109,6 +113,19 @@ clone of this repo.
    `/review-step` after any step you want a second look at before moving on.
 6. Once `STATUS.md` is fully checked, use `/small-change` for further small additions
    or fixes rather than re-running the planner.
+
+## Using Waypoint on an existing project
+
+1. In the project's own repo, run the extend pass (the `extend-project` Skill, or
+   Copilot's `extend-project.prompt.md`) to inspect the codebase and produce
+   `project-context.md` at repo root.
+2. Install Waypoint into that repo (see above), if it isn't already.
+3. Run the planning pass (the `project-planner` Skill, or Copilot's
+   `project-planner.prompt.md`) to generate `docs/design/` for the new feature or
+   subsystem — it reads `project-context.md` automatically if present, and matches
+   its detected stack instead of proposing a fresh one.
+4. From here, follow the same review → `/next-step` → `/small-change` flow as a new
+   project (steps 4-6 above).
 
 ## Developing Waypoint itself
 

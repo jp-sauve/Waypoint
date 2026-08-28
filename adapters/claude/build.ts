@@ -39,7 +39,7 @@ export function buildClaude(manifest: Manifest, canonicalRoot: string): BuiltFil
         const body = read(`methodology/implementer/${fragment}.md`);
         return stripAppliesToLine(resolveTokens(body, "claude", manifest.tokens)).trimEnd();
       });
-      files.push({ path: `${scopeDir}/${cfg.installPath}`, content: sections.join("\n\n---\n\n") + "\n" });
+      files.push({ path: `${scopeDir}/${cfg.installPath}`, content: sections.join("\n\n---\n\n") + "\n", merge: true });
     }
   }
 

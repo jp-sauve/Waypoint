@@ -43,6 +43,22 @@ describe("update", () => {
     expect(readFileSync(path.join(targetDir, ".claude/commands/next-step.md"), "utf8")).toBe(untouchedContentBefore);
   });
 
+  it("re-syncs only the merged block, leaving the consumer's own CLAUDE.md content in place", () => {
+    const { targetDir, globalHome } = setup();
+    // simulate a pre-existing, never-before-installed CLAUDE.md by writing one
+    // before the first install, then merging Waypoint's block into it.
+    const claudeMdPath = path.join(targetDir, "CLAUDE.md");
+    writeFileSync(claudeMdPath, "# Consumer notes\n\nKeep this.\n", "utf8");
+    install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
+    const merged = readFileSync(claudeMdPath, "utf8");
+    expect(merged).toContain("# Consumer notes");
+
+    const summary = update({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
+
+    expect(summary.project.conflicts).toEqual([]);
+    expect(readFileSync(claudeMdPath, "utf8")).toBe(merged);
+  });
+
   it("--force overwrites a locally-edited file", () => {
     const { targetDir, globalHome } = setup();
     install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });

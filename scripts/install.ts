@@ -47,9 +47,9 @@ export function install(options: InstallOptions): InstallSummary {
       const recordKey = `${platform}:${rest}`;
       if (scope === "global") {
         const root = expandHome(manifest.platforms[platform].globalInstallRoot ?? "~/.claude", globalHome);
-        globalFiles.push({ destPath: path.join(root, rest), content: file.content, recordKey });
+        globalFiles.push({ destPath: path.join(root, rest), content: file.content, recordKey, merge: file.merge });
       } else {
-        projectFiles.push({ destPath: path.join(options.targetDir, rest), content: file.content, recordKey });
+        projectFiles.push({ destPath: path.join(options.targetDir, rest), content: file.content, recordKey, merge: file.merge });
       }
     }
   }

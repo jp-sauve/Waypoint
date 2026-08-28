@@ -10,7 +10,8 @@ implementer's job is to execute that plan one step at a time, not to re-plan it.
 1. Read `docs/design/STATUS.md`. Find the first unchecked step.
 2. Read only that step's entry in `docs/design/mvp-implementation-plan.md`, plus any doc it names by name (e.g. `public-api.md`, `data-model.md`). Do not read the entire `docs/design/` corpus — it isn't necessary and wastes context.
 3. If `STATUS.md` or the named step doesn't exist, or the repo has no `docs/design/` directory:
-   - If the user is asking to start a new project or plan first, run {{artifact:requirements-gathering}} (to produce `website-spec.md`) and then {{artifact:project-planning}} (to produce `docs/design/`).
+   - If the user is asking to start a brand-new project, run {{artifact:start-project}} (to produce `website-spec.md`) and then {{artifact:project-planning}} (to produce `docs/design/`).
+   - If the project already has code but no `docs/design/`, and the user wants to add a feature or subsystem to it, run {{artifact:extend-project}} (to produce `project-context.md`) and then {{artifact:project-planning}} instead.
    - Otherwise stop and say the planning package is missing rather than guessing at scope.
 
 ## While implementing

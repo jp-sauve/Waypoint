@@ -9,11 +9,18 @@ The user wants to plan before implementing: "help me design X," "write a spec fo
 ## Step 0 — Establish scope
 
 If a `website-spec.md` file exists at the project root (produced by
-{{artifact:requirements-gathering}}), read it first. Treat its answers — purpose, audience,
+{{artifact:start-project}}), read it first. Treat its answers — purpose, audience,
 pages, features, platform, hosting, domain, visual direction, timeline, and
 out-of-scope items — as authoritative; do not re-ask anything it already covers. Only ask about genuine gaps or the technical
 decisions it doesn't cover (monorepo shape, realtime, auth/roles beyond what it states,
 etc.).
+
+If a `project-context.md` file exists at the project root instead (produced by
+{{artifact:extend-project}} for a project that already has code), read it first. Its
+Detected Stack and Conventions sections replace the greenfield defaults in Step 1 below
+— match what's already there rather than proposing a fresh stack. Its Architecture
+Summary and Relevant Extension Points sections scope where the new work fits; its What's
+Being Added section is the thing to plan.
 
 If the user hasn't already answered these, ask (batch into one question set, don't interrogate one at a time):
 
@@ -28,7 +35,7 @@ Do not proceed to generating documents until scope is clear enough to make the t
 
 ## Step 1 — Lock technical decisions
 
-Every technical decision must be made and stated explicitly in `tradeoffs.md` — never left open, never "TBD." Use these as defaults (this user is a full-stack TypeScript engineer who works with Next.js, Express, Fastify, SCSS, and AWS); deviate only if the project shape genuinely calls for it, and say why in `tradeoffs.md` when you do:
+Every technical decision must be made and stated explicitly in `tradeoffs.md` — never left open, never "TBD." Use these as defaults (this user is a full-stack TypeScript engineer who works with Next.js, Express, Fastify, SCSS, and AWS); deviate only if the project shape genuinely calls for it, and say why in `tradeoffs.md` when you do. If `project-context.md` is present, its Detected Stack overrides these defaults entirely — state the actual stack found there instead.
 
 If `website-spec.md` specifies **plain HTML/CSS/JS** as the platform, the
 frontend-related defaults below (TypeScript, Next.js, frontend Zod validation,

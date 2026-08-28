@@ -40,12 +40,17 @@ describe("install", () => {
       expect(existsSync(path.join(targetDir, rel)), rel).toBe(true);
     }
 
-    for (const rel of ["skills/gather-requirements/SKILL.md", "skills/project-planner/SKILL.md", ".waypoint-meta.json"]) {
+    for (const rel of [
+      "skills/start-project/SKILL.md",
+      "skills/extend-project/SKILL.md",
+      "skills/project-planner/SKILL.md",
+      ".waypoint-meta.json",
+    ]) {
       expect(existsSync(path.join(globalHome, ".claude", rel)), rel).toBe(true);
     }
 
     const record = JSON.parse(readFileSync(path.join(targetDir, ".waypoint", "install-manifest.json"), "utf8"));
-    expect(record.toolkitVersion).toBe("0.4.0");
+    expect(record.toolkitVersion).toBe("0.5.0");
     expect(Object.keys(record.artifacts).length).toBeGreaterThan(0);
   });
 
@@ -66,5 +71,24 @@ describe("install", () => {
 
     expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(true);
     expect(existsSync(path.join(targetDir, ".github"))).toBe(false);
+  });
+
+  it("merges into a pre-existing, never-before-installed CLAUDE.md instead of conflicting", () => {
+    const { targetDir, globalHome } = setup("unmanaged-claude-md-project");
+    const claudeMdPath = path.join(targetDir, "CLAUDE.md");
+    const before = readFileSync(claudeMdPath, "utf8");
+
+    const summary = install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
+
+    expect(summary.project.conflicts).toEqual([]);
+    const after = readFileSync(claudeMdPath, "utf8");
+    expect(after.startsWith(before)).toBe(true);
+    expect(after).toContain("waypoint:begin");
+    expect(after).toContain("waypoint:end");
+
+    // running install again with the same content is a no-op, not another merge
+    const second = install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
+    expect(second.project.conflicts).toEqual([]);
+    expect(readFileSync(claudeMdPath, "utf8")).toBe(after);
   });
 });

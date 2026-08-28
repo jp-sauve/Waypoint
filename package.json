@@ -24,6 +24,7 @@
     "LICENSE"
   ],
   "scripts": {
+    "cli": "tsx scripts/cli.ts",
     "build": "tsx scripts/build.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

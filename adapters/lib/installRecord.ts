@@ -13,7 +13,7 @@ export interface InstallRecord {
   toolkitVersion: string;
   installedAt: string;
   platforms: string[];
-  artifacts: Record<string, { path: string; checksum: string }>;
+  artifacts: Record<string, { path: string; checksum: string; merge?: boolean }>;
 }
 
 export function emptyRecord(toolkitVersion: string): InstallRecord {

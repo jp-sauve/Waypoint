@@ -59,10 +59,25 @@ describe("uninstall", () => {
     expect(existsSync(editedPath)).toBe(false);
   });
 
+  it("strips only the merged block from CLAUDE.md, keeping the consumer's own content", () => {
+    const { targetDir, globalHome } = setup("empty-project");
+    const claudeMdPath = path.join(targetDir, "CLAUDE.md");
+    writeFileSync(claudeMdPath, "# Consumer notes\n\nKeep this.\n", "utf8");
+    install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
+
+    const summary = uninstall({ targetDir, globalHome, toolkitRoot: repoRoot });
+
+    expect(summary.project.conflicts).toEqual([]);
+    expect(existsSync(claudeMdPath)).toBe(true);
+    const after = readFileSync(claudeMdPath, "utf8");
+    expect(after).toBe("# Consumer notes\n\nKeep this.\n");
+    expect(after).not.toContain("waypoint:begin");
+  });
+
   it("removes global artifacts only when includeGlobal is set", () => {
     const { targetDir, globalHome } = setup("empty-project");
     install({ targetDir, platforms: ["claude"], globalHome, toolkitRoot: repoRoot });
-    const globalSkillPath = path.join(globalHome, ".claude/skills/gather-requirements/SKILL.md");
+    const globalSkillPath = path.join(globalHome, ".claude/skills/start-project/SKILL.md");
     expect(existsSync(globalSkillPath)).toBe(true);
 
     uninstall({ targetDir, globalHome, toolkitRoot: repoRoot });

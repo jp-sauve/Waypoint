@@ -1,4 +1,4 @@
-# Gather Requirements
+# Start Project
 
 A structured interview skill that turns a vague "build me a website" request into a
 complete, unambiguous spec another agent (or you, afterward) can build from.
