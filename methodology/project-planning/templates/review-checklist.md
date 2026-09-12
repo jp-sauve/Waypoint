@@ -8,6 +8,8 @@ Before hand-rolling a modal, dropdown, toast, or header, see the `ui-component-r
 
 Before hand-rolling a new page/route's scroll or navigation behavior (snapped viewport sections, a paged/slide sequence, an SPA content region, a sticky split-scroll narrative, a pan/zoom canvas, or a progressively-loaded feed) or a region's spatial composition (a grid, bento, sidebar + content, layered, asymmetric), see the `layout-pattern-references` Claude Skill (or `.waypoint/layout-patterns/references/` directly on the Copilot side).
 
+For a diff that touches game state, legal actions, transitions, multiplayer synchronization, or in-game UI, see the `game-engineering-checklist` Claude Skill (or `.waypoint/game-engineering/references/` directly on the Copilot side) — confirm rule changes live only in the rules engine.
+
 - **Security**: no unsafe HTML rendering (unsanitized `dangerouslySetInnerHTML` / iframe `srcdoc`), no secrets in code or logs, rate limits in place on any mutating or unauthenticated endpoint (HTTP and WebSocket alike), new dependencies have a license compatible with this project's (see `tradeoffs.md`).
 - **Privacy**: only necessary personal-data fields are collected, no PII in logs, a deletion/export path exists for user data, non-essential cookies/trackers require consent before loading.
 - **Types**: no implicit `any`, strict null checks pass, request/response/message shapes match `public-api.md` exactly.
@@ -17,5 +19,6 @@ Before hand-rolling a new page/route's scroll or navigation behavior (snapped vi
 - **Responsive**: works at mobile, tablet, and desktop breakpoints — verified, not assumed.
 - **Error handling**: user-facing errors have a message and a recovery path, not a blank screen or a swallowed exception.
 - **Realtime (if applicable)**: connection lifecycle handled (connect/disconnect/reconnect with backoff), messages validated against a schema before use, reconnection doesn't duplicate or drop state.
+- **Game rules (if applicable)**: rule/transition/terminal-condition logic lives only in the rules engine, not duplicated in UI/server/AI/replay code; the server (not the client) is authoritative for validating and applying actions; duplicate/out-of-order actions and reconnects are handled explicitly.
 - **Scope**: the diff matches the step's "Files to create/modify" list; nothing outside "Out of scope" was touched without flagging it first.
 - **DX**: function and file names are clear without needing a comment to explain them; `docs/design/STATUS.md` was updated as the last step.
