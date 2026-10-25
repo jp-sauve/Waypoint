@@ -30,6 +30,15 @@ If the user hasn't already answered these, ask (batch into one question set, don
 4. **Persistence/auth?** Does it need a database, user accounts, roles?
 5. **Deployment target**: where does this actually run? If `website-spec.md` gave a hosting answer, use it — see Step 1 for how each option (Vercel, GitHub/GitLab Pages, self-managed, AWS) maps to a build/deploy strategy. Otherwise default assumption is Vercel (static export or full build, whichever the project needs) unless told otherwise — see Step 1 for why Vercel is the default and when AWS is warranted instead.
 6. **Working name.** If the user doesn't have one, propose 2-3 options and pick one — state it explicitly and use it consistently in every doc, package name, and folder name from that point on.
+7. **Is this a game?** If the project's core is a rules-governed interactive game
+   (board/card/puzzle/arcade — anything with legal actions and win/loss/draw
+   conditions), also ask: turn-based or continuous/real-time? Single-player, local
+   multiplayer, or networked multiplayer? Deterministic rules (no hidden information
+   or randomness) or does it need a seeded RNG for reproducibility? Are AI/bot
+   opponents wanted now, later, or not at all? These answers decide which of the
+   conditional docs in Step 2 (`game-design.md`, `multiplayer-architecture.md`) get
+   produced and gate the game-specific decomposition guidance in Step 3. `project-context.md`'s "What's Being Added" may already answer this for an existing
+   codebase — don't re-ask what it already states.
 
 Do not proceed to generating documents until scope is clear enough to make the technical decisions in Step 1 without guessing. Genuinely open strategic questions (not blocking ones) go in `open-questions.md`, not back to the user as a blocker.
 
@@ -99,6 +108,32 @@ Write everything under `docs/design/` in the target project (create the director
 - `configuration-system.md` — if the project is config-or-manifest-driven: config typing, validation, defaults, environment overrides, per-module scoping.
 - `react-integration.md` / `nextjs-integration.md` — if there's a frontend: provider/hook surface, server/client component boundary, error boundaries, loading states.
 - `module-spec.md` / `manifest-spec.md` — only for plugin/module-composition systems (not typical full-stack CRUD apps).
+- `game-design.md` — if the project is a game (per Step 0, question 7): the single
+  authoritative specification of the rules, written before any engine code exists.
+  State the state representation (what fully describes a position — not the data
+  structure, the domain model), the legal action space, the transition function
+  (`GameState + Action -> GameState'`, including captures/scoring/side effects),
+  victory/draw/termination conditions, and invariants that must always hold. State
+  explicitly, in this doc and echoed in `architecture-overview.md`: **game rules
+  must have one authoritative implementation (the rules engine) — UI, server, AI,
+  and replay code consume it and must not reimplement any rule.** Also state the
+  action-history/replay approach (store the action log, not just current state, if
+  replay/spectating/undo matter at all) and the AI-player boundary (an AI submits
+  actions through the same interface a human client uses — establish this now even
+  if no AI player is planned yet). If an existing interchange format fits (e.g. SGF
+  for a Go-like game), name it here; don't invent a bespoke one, and don't assume
+  one for a game it doesn't fit. See `{{artifact:game-engineering-checklist}}` for
+  the engine-design and testing rationale this doc's decisions should match.
+- `multiplayer-architecture.md` — if the game (per Step 0, question 7) has networked
+  multiplayer: the authoritative-server model (the server's engine instance is the
+  only place actions are validated and applied; clients only request actions), the
+  synchronization strategy, how duplicate/out-of-order actions are detected and
+  handled, reconnect/refresh behavior (a client can fetch current authoritative
+  state, not rely only on future deltas), abandoned-game resolution (timeout,
+  forfeit, pause window), and what's persisted server-side and where. If
+  `realtime-protocol.md` is also produced, keep the split clean: that doc defines
+  the wire message shapes, this one defines the authority/sync semantics layered on
+  top of them — don't duplicate content between the two.
 - `ui.md` — if the project has any user-facing UI — a Next.js frontend or a plain HTML/CSS/JS site alike — and any visual direction was specified (colors, typography, tone, reference sites, brand assets — typically from `website-spec.md`'s Visual Direction section, or given directly by the user): state a concrete palette (hex values or token names, not just a mood word — translate a mood into an actual palette here), typography choices, tone/voice, what to borrow from any named reference sites, where brand assets live, and any contrast/accessibility notes. Every step in `mvp-implementation-plan.md` that builds UI must cite this doc by name, the same way UI steps cite `public-api.md` for component props.
 
 Do not add doc files beyond this list without a reason stated in `00-index.md` — more files than the project needs is as much a failure mode as too few.
@@ -116,6 +151,48 @@ Rules:
 - Every step needs concrete, checkable acceptance criteria (a specific test file passing, a specific error class being thrown, a specific route returning a specific status code) — not "works correctly."
 - Every step lists explicit "out of scope" items to block scope creep into later steps.
 - If `ui.md` exists, every step that builds UI must cite it by name as a reference doc, the same way steps cite `public-api.md`.
+- If `game-design.md` exists, every step that touches game state, actions, transitions, or the engine must cite it and, once it exists, `public-api.md`'s engine signatures — the same way UI steps cite `ui.md`.
+
+### Game feature decomposition (if `game-design.md` exists)
+
+A single step like "implement online gameplay" is not atomic — it bundles rules,
+persistence, networking, and UI into one unreviewable unit and can't be verified
+piece by piece. Decompose instead into a progression of independently testable
+foundations, each buildable and verifiable without the ones after it existing yet.
+A typical phase order (split further if any phase is still too large for one
+session):
+
+1. **State representation** — the `GameState` shape and its invariants, with tests
+   asserting the invariants hold for hand-constructed states.
+2. **Legal actions** — `legalActions()`/`isLegal()`, tested against known
+   positions.
+3. **Transitions** — `transition(state, action)`, including captures/scoring/side
+   effects, tested example-based and (per `{{artifact:game-engineering-checklist}}`)
+   property-based or exhaustive where the state space allows.
+4. **Terminal conditions** — `isTerminal()`, tested from more than one path to the
+   same outcome.
+5. **Engine test hardening** — simulation/self-play and adversarial cases (out-of-
+   turn actions, stale/replayed actions, malformed payloads), per
+   `{{artifact:game-engineering-checklist}}`.
+6. **Server authority** — the server applies actions only through the engine from
+   step 1-4; local/offline play can ship after this step even before networking
+   exists.
+7. **Synchronization** — broadcasting authoritative state/deltas to connected
+   clients, with duplicate/out-of-order handling.
+8. **Reconnect & abandonment** — a client can fetch current state on rejoin;
+   disconnect/timeout/forfeit behavior is defined.
+9. **Persistence** — game state and (if replay/spectating is a goal) action history
+   survive a server restart.
+10. **UI interaction** — turn state, legal-action affordances, illegal-action
+    feedback, termination UX, touch/keyboard input, citing `game-design.md` and
+    `ui.md` if present.
+11. *(deferred, not a prerequisite for the above)* **AI player** — a bot submitting
+    actions through the same interface as step 6's human clients.
+
+Steps 6-9 apply only when the game has networked multiplayer (per Step 0, question
+7); a local/single-player game's plan ends at step 4-5 plus UI. Order so the game
+is genuinely playable end-to-end after step 4 or 6 (whichever applies), not only
+once every phase is done.
 
 ## Step 4 — Optional: flat milestone-prompt export
 

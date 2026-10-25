@@ -1,5 +1,5 @@
 name: waypoint
-version: 0.5.0
+version: 0.6.0
 description: >-
   A reusable starting point for AI-assisted projects: requirements gathering for a
   new project or codebase inspection for an existing one, project planning, an
@@ -41,6 +41,9 @@ tokens:
   "artifact:layout-patterns":
     claude: "the `layout-pattern-references` Skill"
     copilot: "the layout pattern references at `.waypoint/layout-patterns/references/`"
+  "artifact:game-engineering-checklist":
+    claude: "the `game-engineering-checklist` Skill"
+    copilot: "the game engineering references at `.waypoint/game-engineering/references/`"
   "command:next-step":
     claude: "`/next-step`"
     copilot: "`.github/prompts/next-step.prompt.md`"
@@ -211,6 +214,33 @@ artifacts:
         type: references
         installPath: null
         bundledFilesInstallPath: ".waypoint/layout-patterns/references"
+
+  - id: game-engineering-checklist
+    kind: skill
+    name: game-engineering-checklist
+    description: >-
+      Checklist and reference material for deterministic, interactive, networked
+      games: keeping game rules in one authoritative rules engine, rules-review and
+      adversarial testing, multiplayer server authority and synchronization, replay
+      and simulation, and game-specific UX/playtesting. Self-selecting by diff — a
+      non-game project's changes simply never match its trigger table.
+    source: methodology/game-engineering-checklist.md
+    bundledFiles:
+      - methodology/game-engineering/references/deterministic-engine.md
+      - methodology/game-engineering/references/multiplayer-authority.md
+      - methodology/game-engineering/references/game-ux-playtest.md
+    installScope: project
+    platforms:
+      claude:
+        type: skill
+        installPath: ".claude/skills/game-engineering-checklist"
+        # references live at the shared neutral path below, not bundled under the
+        # skill folder, so Claude and Copilot read the exact same installed files.
+        bundledFilesInstallPath: ".waypoint/game-engineering/references"
+      copilot:
+        type: references
+        installPath: null
+        bundledFilesInstallPath: ".waypoint/game-engineering/references"
 
   - id: implementer-instructions
     kind: instructions

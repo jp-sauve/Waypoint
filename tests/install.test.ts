@@ -50,7 +50,7 @@ describe("install", () => {
     }
 
     const record = JSON.parse(readFileSync(path.join(targetDir, ".waypoint", "install-manifest.json"), "utf8"));
-    expect(record.toolkitVersion).toBe("0.5.0");
+    expect(record.toolkitVersion).toBe("0.6.0");
     expect(Object.keys(record.artifacts).length).toBeGreaterThan(0);
   });
 

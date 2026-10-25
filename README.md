@@ -43,6 +43,17 @@ distributable Skills/commands as if they were this repo's live configuration. Se
   grid variants incl. offset and masonry, a uniform flex row, bento, sidebar +
   content, layered, asymmetric), to adapt instead of reinventing scroll mechanics or
   layout structure from scratch.
+- **Game engineering checklist** (`methodology/game-engineering-checklist.md` +
+  `methodology/game-engineering/references/`) — for projects whose core is a
+  rules-governed interactive game: keeping game rules in one authoritative rules
+  engine (`GameState + Action -> GameState'`), rules-review/adversarial testing,
+  multiplayer server authority and synchronization, replay/simulation, and
+  game-specific UX/playtesting. Self-selecting by diff — a non-game project's
+  changes simply never trigger it. The planner also produces `game-design.md`
+  (and, for networked multiplayer, `multiplayer-architecture.md`) when the project
+  is a game, and decomposes game features into the atomic phase progression this
+  checklist's sections map to (state → legal actions → transitions → terminal
+  conditions → server authority → sync → reconnect → persistence → UI → AI player).
 - **Implementer** (`methodology/implementer/*.md` + `commands/*.md`) — the always-on
   repo conventions and the `STATUS.md` protocol that drives a project one step at a
   time: `next-step`, `review-step`, `small-change`.

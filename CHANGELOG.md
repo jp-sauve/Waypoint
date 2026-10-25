@@ -4,6 +4,37 @@ All notable changes to Waypoint are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow semver
 and track `manifest.yaml`'s `version` field, which is the source of truth.
 
+## 0.6.0 — Game engineering layer
+
+### Added
+- `methodology/game-engineering-checklist.md` + `methodology/game-engineering/references/{deterministic-engine,multiplayer-authority,game-ux-playtest}.md`
+  — a new `game-engineering-checklist` Skill (Claude) / shared references (Copilot)
+  for deterministic, interactive, networked games: one authoritative rules engine
+  (`GameState + Action -> GameState'`), rules-review/adversarial/property/simulation
+  testing, multiplayer server authority and synchronization (race conditions,
+  duplicate/out-of-order actions, reconnects, abandoned games, persistence,
+  client-trust boundary), replay/simulation (action history over opaque current
+  state, optional SGF-style export where the domain fits), game-specific UX and
+  playtest criteria, and the AI-player boundary (an AI submits actions through the
+  same interface as a human client, established even before any AI player exists).
+  Self-selecting by diff, like the existing engineering checklist — a non-game
+  project's changes never trigger any of its sections.
+- `methodology/project-planning.md` — Step 0 now asks whether the project is a game
+  (turn-based/real-time, multiplayer scope, determinism, AI plans); Step 2 adds
+  `game-design.md` (the authoritative rules spec, produced for any game) and
+  `multiplayer-architecture.md` (authority/sync semantics, produced when the game
+  has networked multiplayer) as conditional docs; Step 3 adds an explicit atomic
+  decomposition for game features (state → legal actions → transitions → terminal
+  conditions → engine hardening → server authority → sync → reconnect →
+  persistence → UI → AI player) so a game feature is never planned as one
+  "implement online gameplay" step.
+- `methodology/implementer/core-protocol.md`, `commands/review-step.md`,
+  `commands/small-change.md`, and the `review-checklist.md` template now each hook
+  in `{{artifact:game-engineering-checklist}}` the same way they already hook in
+  the engineering checklist / UI component / layout pattern references, so a diff
+  touching game rules or multiplayer sync gets checked automatically during
+  `/review-step` and `/small-change`, not just at planning time.
+
 ## 0.4.0 — Spatial composition patterns
 
 ### Added
