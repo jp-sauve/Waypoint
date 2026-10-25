@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildClaude } from "../adapters/claude/build.js";
 import { buildCopilot } from "../adapters/copilot/build.js";
+import { buildAugure } from "../adapters/augure/build.js";
 import { loadManifest } from "../adapters/lib/manifest.js";
 import type { BuiltFile } from "../adapters/lib/types.js";
 
@@ -15,6 +16,7 @@ export function build(root: string = repoRoot, distRoot: string = path.join(root
 
   writeAll(distRoot, "claude", buildClaude(manifest, root));
   writeAll(distRoot, "copilot", buildCopilot(manifest, root));
+  writeAll(distRoot, "augure", buildAugure(manifest, root));
 }
 
 function writeAll(distRoot: string, platform: string, files: BuiltFile[]): void {
@@ -29,5 +31,5 @@ function writeAll(distRoot: string, platform: string, files: BuiltFile[]): void 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   build();
   // eslint-disable-next-line no-console
-  console.log("Built dist/claude/** and dist/copilot/**");
+  console.log("Built dist/claude/**, dist/copilot/**, and dist/augure/**");
 }

@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { load as parseYaml } from "js-yaml";
 import { z } from "zod";
 
-const platformKey = z.enum(["claude", "copilot"]);
+export const PLATFORM_KEYS = ["claude", "copilot", "augure"] as const;
+const platformKey = z.enum(PLATFORM_KEYS);
+
+export const DEFAULT_PLATFORMS = [...PLATFORM_KEYS] as PlatformKey[];
 
 const artifactPlatformConfig = z.object({
   type: z.enum(["skill", "prompt", "always-on", "scoped", "command", "references"]),
@@ -20,33 +23,23 @@ const artifactSchema = z.object({
   applyTo: z.string().optional(),
   bundledFiles: z.array(z.string()).optional(),
   installScope: z.enum(["global", "project"]),
-  platforms: z.object({
-    claude: artifactPlatformConfig.optional(),
-    copilot: artifactPlatformConfig.optional(),
-  }),
+  platforms: z.record(platformKey, artifactPlatformConfig.optional()),
 });
 
 const manifestSchema = z.object({
   name: z.string(),
   version: z.string(),
   description: z.string(),
-  platforms: z.object({
-    claude: z.object({
-      displayName: z.string(),
-      globalInstallSupported: z.boolean(),
-      globalInstallRoot: z.string().optional(),
-    }),
-    copilot: z.object({
-      displayName: z.string(),
-      globalInstallSupported: z.boolean(),
-      globalInstallRoot: z.string().optional(),
-    }),
-  }),
-  tokens: z.record(z.string(), z.object({ claude: z.string(), copilot: z.string() })),
+  platforms: z.record(platformKey, z.object({
+    displayName: z.string(),
+    globalInstallSupported: z.boolean(),
+    globalInstallRoot: z.string().optional(),
+  })),
+  tokens: z.record(z.string(), z.record(platformKey, z.string())),
   artifacts: z.array(artifactSchema),
 });
 
-export type PlatformKey = z.infer<typeof platformKey>;
+export type PlatformKey = (typeof PLATFORM_KEYS)[number];
 export type Artifact = z.infer<typeof artifactSchema>;
 export type Manifest = z.infer<typeof manifestSchema>;
 

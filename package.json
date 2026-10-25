@@ -2,7 +2,7 @@
   "name": "waypoint",
   "version": "0.1.0",
   "type": "module",
-  "description": "A reusable starting point for AI-assisted projects, installable into Claude Code and/or GitHub Copilot.",
+  "description": "A reusable starting point for AI-assisted projects, installable into Claude Code, GitHub Copilot, and Augure.",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -137,8 +137,60 @@ describe("build", () => {
     );
   });
 
+  it("produces the expected Augure file tree with global skills and project artifacts", () => {
+    const files = walk(path.join(distRoot, "augure")).sort();
+    expect(files).toEqual(
+      [
+        "global/skills/extend-project/SKILL.md",
+        "global/skills/project-planner/SKILL.md",
+        "global/skills/start-project/SKILL.md",
+        "global/skills/project-planner/templates/review-checklist.md",
+        "global/skills/project-planner/templates/status-template.md",
+        "global/skills/project-planner/templates/step-format.md",
+        "project/.augure/commands/next-step.md",
+        "project/.augure/commands/review-step.md",
+        "project/.augure/commands/small-change.md",
+        "project/AGENTS.md",
+        "project/.waypoint/checklist/references/owasp-top10.md",
+        "project/.waypoint/checklist/references/privacy-checklist.md",
+        "project/.waypoint/checklist/references/wcag-checklist.md",
+        "project/.waypoint/game-engineering/references/deterministic-engine.md",
+        "project/.waypoint/game-engineering/references/multiplayer-authority.md",
+        "project/.waypoint/game-engineering/references/game-ux-playtest.md",
+        "project/.waypoint/layout-patterns/references/asymmetric.md",
+        "project/.waypoint/layout-patterns/references/bento.md",
+        "project/.waypoint/layout-patterns/references/canvas.md",
+        "project/.waypoint/layout-patterns/references/document-flow.md",
+        "project/.waypoint/layout-patterns/references/feed.md",
+        "project/.waypoint/layout-patterns/references/grid-masonry.md",
+        "project/.waypoint/layout-patterns/references/grid-normal.md",
+        "project/.waypoint/layout-patterns/references/grid-offset.md",
+        "project/.waypoint/layout-patterns/references/layered.md",
+        "project/.waypoint/layout-patterns/references/multi-column.md",
+        "project/.waypoint/layout-patterns/references/paged-slides.md",
+        "project/.waypoint/layout-patterns/references/sidebar-content.md",
+        "project/.waypoint/layout-patterns/references/single-column.md",
+        "project/.waypoint/layout-patterns/references/spa-shell.md",
+        "project/.waypoint/layout-patterns/references/sticky-split-scroll.md",
+        "project/.waypoint/layout-patterns/references/uniform-flex-row.md",
+        "project/.waypoint/layout-patterns/references/viewport-sections-hard-snap.md",
+        "project/.waypoint/layout-patterns/references/viewport-sections-overlapping.md",
+        "project/.waypoint/layout-patterns/references/viewport-sections-soft-snap.md",
+        "project/.waypoint/ui-components/references/dropdown-menu-vanilla.md",
+        "project/.waypoint/ui-components/references/dropdown-menu.md",
+        "project/.waypoint/ui-components/references/header-fixed.md",
+        "project/.waypoint/ui-components/references/header-shrinking.md",
+        "project/.waypoint/ui-components/references/header-static.md",
+        "project/.waypoint/ui-components/references/modal-vanilla.md",
+        "project/.waypoint/ui-components/references/modal.md",
+        "project/.waypoint/ui-components/references/toast-vanilla.md",
+        "project/.waypoint/ui-components/references/toast.md",
+      ].sort(),
+    );
+  });
+
   it("never leaks canonical source paths into dist", () => {
-    const all = [...walk(path.join(distRoot, "claude")), ...walk(path.join(distRoot, "copilot"))];
+    const all = [...walk(path.join(distRoot, "claude")), ...walk(path.join(distRoot, "copilot")), ...walk(path.join(distRoot, "augure"))];
     for (const rel of all) {
       expect(rel).not.toMatch(/^(global|project)\/methodology\//);
       expect(rel).not.toMatch(/^(global|project)\/commands\//);
@@ -148,7 +200,7 @@ describe("build", () => {
   });
 
   it("leaves no unresolved {{token}} placeholders in any installed file", () => {
-    for (const platform of ["claude", "copilot"] as const) {
+    for (const platform of ["claude", "copilot", "augure"] as const) {
       for (const rel of walk(path.join(distRoot, platform))) {
         const content = readFileSync(path.join(distRoot, platform, rel), "utf8");
         expect(content, `${platform}/${rel} has an unresolved token`).not.toMatch(/\{\{[a-zA-Z0-9:_-]+\}\}/);
@@ -157,7 +209,7 @@ describe("build", () => {
   });
 
   it("never emits the stripped 'Applies to files matching' trailer line", () => {
-    for (const platform of ["claude", "copilot"] as const) {
+    for (const platform of ["claude", "copilot", "augure"] as const) {
       for (const rel of walk(path.join(distRoot, platform))) {
         const content = readFileSync(path.join(distRoot, platform, rel), "utf8");
         expect(content, `${platform}/${rel}`).not.toMatch(/Applies to files matching/);
@@ -191,5 +243,16 @@ describe("build", () => {
     const claudeCommand = readFileSync(path.join(distRoot, "claude/project/.claude/commands/next-step.md"), "utf8");
     expect(claudeCommand).toMatch(/^---\ndescription: /);
     expect(claudeCommand).not.toMatch(/agent:/);
+  });
+
+  it("renders Augure AGENTS.md with all implementer conventions and command descriptions", () => {
+    const agentsMd = readFileSync(path.join(distRoot, "augure/project/AGENTS.md"), "utf8");
+    expect(agentsMd).toMatch(/API Route Conventions/);
+    expect(agentsMd).toMatch(/React \/ Next\.js Component Conventions/);
+    expect(agentsMd).toMatch(/Test Conventions/);
+
+    const augureCommand = readFileSync(path.join(distRoot, "augure/project/.augure/commands/next-step.md"), "utf8");
+    expect(augureCommand).toMatch(/^---\ndescription: /);
+    expect(augureCommand).not.toMatch(/agent:/);
   });
 });

@@ -20,17 +20,19 @@ function setup(fixture: string) {
 }
 
 describe("install", () => {
-  it("writes both platforms' project and global files into an empty project", () => {
+  it("writes all platforms' project and global files into an empty project", () => {
     const { targetDir, globalHome } = setup("empty-project");
 
-    const summary = install({ targetDir, platforms: ["claude", "copilot"], globalHome, toolkitRoot: repoRoot });
+    const summary = install({ targetDir, platforms: ["claude", "copilot", "augure"], globalHome, toolkitRoot: repoRoot });
 
     expect(summary.project.conflicts).toEqual([]);
-    expect(summary.global.conflicts).toEqual([]);
+    expect(Object.values(summary.global).flatMap((result) => result.conflicts)).toEqual([]);
 
     for (const rel of [
       "CLAUDE.md",
+      "AGENTS.md",
       ".claude/commands/next-step.md",
+      ".augure/commands/next-step.md",
       ".claude/skills/web-engineering-checklist/SKILL.md",
       ".github/copilot-instructions.md",
       ".github/prompts/next-step.prompt.md",
@@ -49,8 +51,12 @@ describe("install", () => {
       expect(existsSync(path.join(globalHome, ".claude", rel)), rel).toBe(true);
     }
 
+    for (const rel of ["skills/start-project/SKILL.md", "skills/extend-project/SKILL.md", "skills/project-planner/SKILL.md", ".waypoint-meta.json"]) {
+      expect(existsSync(path.join(globalHome, ".augure", rel)), rel).toBe(true);
+    }
+
     const record = JSON.parse(readFileSync(path.join(targetDir, ".waypoint", "install-manifest.json"), "utf8"));
-    expect(record.toolkitVersion).toBe("0.6.0");
+    expect(record.toolkitVersion).toBe("0.7.0");
     expect(Object.keys(record.artifacts).length).toBeGreaterThan(0);
   });
 
@@ -71,6 +77,19 @@ describe("install", () => {
 
     expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(true);
     expect(existsSync(path.join(targetDir, ".github"))).toBe(false);
+    expect(existsSync(path.join(targetDir, ".augure"))).toBe(false);
+  });
+
+  it("installs Augure project and global artifacts without Claude or Copilot files", () => {
+    const { targetDir, globalHome } = setup("empty-project");
+
+    install({ targetDir, platforms: ["augure"], globalHome, toolkitRoot: repoRoot });
+
+    expect(existsSync(path.join(targetDir, "AGENTS.md"))).toBe(true);
+    expect(existsSync(path.join(targetDir, ".augure/commands/next-step.md"))).toBe(true);
+    expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(false);
+    expect(existsSync(path.join(targetDir, ".github/copilot-instructions.md"))).toBe(false);
+    expect(existsSync(path.join(globalHome, ".augure/skills/start-project/SKILL.md"))).toBe(true);
   });
 
   it("merges into a pre-existing, never-before-installed CLAUDE.md instead of conflicting", () => {

@@ -24,7 +24,7 @@ describe("cli dispatcher", () => {
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("Usage:"));
   });
 
-  it("dispatches install and writes files into the target directory", () => {
+  it("dispatches install and writes files for an explicitly requested platform", () => {
     const targetDir = copyFixture("empty-project");
     const globalHome = freshTempDir("global-home");
     cleanup.push(targetDir, globalHome);
@@ -34,6 +34,21 @@ describe("cli dispatcher", () => {
 
     expect(code).toBe(0);
     expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(true);
+  });
+
+  it("defaults to installing Claude, Copilot, and Augure", () => {
+    const targetDir = copyFixture("empty-project");
+    const globalHome = freshTempDir("global-home");
+    cleanup.push(targetDir, globalHome);
+    vi.spyOn(console, "log").mockImplementation(() => {});
+
+    const code = main(["install", targetDir, `--global-home=${globalHome}`]);
+
+    expect(code).toBe(0);
+    expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(true);
+    expect(existsSync(path.join(targetDir, ".github/copilot-instructions.md"))).toBe(true);
+    expect(existsSync(path.join(targetDir, "AGENTS.md"))).toBe(true);
+    expect(existsSync(path.join(globalHome, ".augure/skills/start-project/SKILL.md"))).toBe(true);
   });
 
   it("dispatches update and reports the 'nothing installed' error via exit code 1", () => {

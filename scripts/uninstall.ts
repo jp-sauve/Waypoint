@@ -4,8 +4,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { uninstallFiles, type UninstallResult } from "../adapters/lib/installer.js";
 import { readRecord, writeRecord } from "../adapters/lib/installRecord.js";
-import { loadManifest } from "../adapters/lib/manifest.js";
-import { globalRecordPath, projectRecordPath } from "./install.js";
+import { PLATFORM_KEYS, loadManifest, type PlatformKey } from "../adapters/lib/manifest.js";
+import { globalRecordDirectory, projectRecordPath } from "./install.js";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -38,10 +38,16 @@ export function uninstall(options: UninstallOptions): UninstallSummary {
   let globalResult: UninstallResult | undefined;
   if (options.includeGlobal) {
     const manifest = loadManifest(path.join(toolkitRoot, "manifest.yaml"));
-    const globPath = globalRecordPath(manifest, globalHome);
-    const globRecord = readRecord(globPath);
-    globalResult = globRecord ? uninstallFiles(globRecord, { force: options.force }) : { removed: [], conflicts: [] };
-    finalizeRecord(globPath, globRecord);
+    globalResult = { removed: [], conflicts: [] };
+    for (const platform of PLATFORM_KEYS as readonly PlatformKey[]) {
+      if (!manifest.platforms[platform]?.globalInstallSupported) continue;
+      const globPath = path.join(globalRecordDirectory(manifest, platform, globalHome), ".waypoint-meta.json");
+      const globRecord = readRecord(globPath);
+      const result = globRecord ? uninstallFiles(globRecord, { force: options.force }) : { removed: [], conflicts: [] };
+      globalResult.removed.push(...result.removed);
+      globalResult.conflicts.push(...result.conflicts);
+      finalizeRecord(globPath, globRecord);
+    }
   }
 
   return { project: projectResult, global: globalResult };
