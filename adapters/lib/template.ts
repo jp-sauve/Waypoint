@@ -14,7 +14,11 @@ export function resolveTokens(body: string, platform: PlatformKey, tokens: Manif
     if (!entry) {
       throw new Error(`Unresolvable token ${match} — add it to manifest.yaml's "tokens" map.`);
     }
-    return entry[platform];
+    const value = entry[platform];
+    if (value === undefined) {
+      throw new Error(`Token ${match} has no "${platform}" resolution in manifest.yaml.`);
+    }
+    return value;
   });
 }
 

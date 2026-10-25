@@ -23,13 +23,15 @@ function setup(fixture: string) {
 describe("uninstall", () => {
   it("removes every file it installed and the install-manifest itself", () => {
     const { targetDir, globalHome } = setup("empty-project");
-    install({ targetDir, platforms: ["claude", "copilot"], globalHome, toolkitRoot: repoRoot });
+    install({ targetDir, platforms: ["claude", "copilot", "augure"], globalHome, toolkitRoot: repoRoot });
 
     const summary = uninstall({ targetDir, globalHome, toolkitRoot: repoRoot });
 
     expect(summary.project.conflicts).toEqual([]);
     expect(existsSync(path.join(targetDir, "CLAUDE.md"))).toBe(false);
     expect(existsSync(path.join(targetDir, ".github/copilot-instructions.md"))).toBe(false);
+    expect(existsSync(path.join(targetDir, "AGENTS.md"))).toBe(false);
+    expect(existsSync(path.join(targetDir, ".augure"))).toBe(false);
     expect(existsSync(path.join(targetDir, ".waypoint"))).toBe(false);
   });
 
@@ -85,5 +87,17 @@ describe("uninstall", () => {
 
     uninstall({ targetDir, globalHome, includeGlobal: true, toolkitRoot: repoRoot });
     expect(existsSync(globalSkillPath)).toBe(false);
+  });
+
+  it("removes Augure global artifacts when includeGlobal is set", () => {
+    const { targetDir, globalHome } = setup("empty-project");
+    install({ targetDir, platforms: ["augure"], globalHome, toolkitRoot: repoRoot });
+    const globalSkillPath = path.join(globalHome, ".augure/skills/start-project/SKILL.md");
+    expect(existsSync(globalSkillPath)).toBe(true);
+
+    uninstall({ targetDir, globalHome, includeGlobal: true, toolkitRoot: repoRoot });
+
+    expect(existsSync(globalSkillPath)).toBe(false);
+    expect(existsSync(path.join(globalHome, ".augure/.waypoint-meta.json"))).toBe(false);
   });
 });

@@ -5,7 +5,7 @@
 A reusable starting point for AI-assisted projects: requirements gathering for a new
 project or codebase inspection for an existing one, project planning, an engineering
 checklist, verified UI component and layout pattern references, and an implementer
-protocol — installable into Claude Code and/or GitHub Copilot.
+protocol — installable into Claude Code, GitHub Copilot, and/or Augure.
 
 Waypoint's own canonical source is plain, platform-neutral Markdown under
 `methodology/` and `commands/`. It does **not** live under `.claude/` or `.github/` —
@@ -64,21 +64,22 @@ distributable Skills/commands as if they were this repo's live configuration. Se
 methodology/*.md, commands/*.md, manifest.yaml   (canonical source, edit these)
         │  pnpm build
         ▼
-adapters/{claude,copilot}/build.ts               (pure transform, no new content)
+adapters/{claude,copilot,augure}/build.ts        (pure transform, no new content)
         │
         ▼
-dist/{claude,copilot}/**                         (rendered, platform-shaped files)
-        │  node scripts/install.js <targetDir> --platform=claude,copilot
+dist/{claude,copilot,augure}/**                  (rendered, platform-shaped files)
+        │  node scripts/install.js <targetDir> --platform=claude,copilot,augure
         ▼
-<consumer repo>/{CLAUDE.md, .claude/**, .github/**, .waypoint/install-manifest.json}
+<consumer repo>/{CLAUDE.md, .claude/**, .github/**, AGENTS.md, .augure/**, .waypoint/install-manifest.json}
 ```
 
 `manifest.yaml` is the single registry of what each artifact is, which platform(s) it
 targets, and exactly where it installs — see it directly for the full list. Three
 artifacts (`start-project`, `extend-project`, `project-planning`) install once,
-globally, for Claude Code (`~/.claude/skills/`), since they're useful before a project
-repo even exists (or before Waypoint is installed into one); GitHub Copilot has no
-global mechanism, so its version of everything installs per-project. The engineering
+globally, for Claude Code and Augure (`~/.claude/skills/` and `~/.augure/skills/`),
+since they're useful before a project repo even exists (or before Waypoint is installed
+into one); GitHub Copilot has no global mechanism, so its version of everything
+installs per-project. The engineering
 checklist's deep-dive reference files install once, at a platform-neutral
 `.waypoint/checklist/references/` path, so both a Claude Skill and a Copilot prompt
 read the exact same installed files rather than two separately duplicated copies.
@@ -87,14 +88,14 @@ read the exact same installed files rather than two separately duplicated copies
 
 ```bash
 pnpm install   # once, in this repo
-pnpm build     # canonical source -> dist/claude/**, dist/copilot/**
+pnpm build     # canonical source -> dist/claude/**, dist/copilot/**, dist/augure/**
 pnpm test      # build + install + update + uninstall + separation checks
 
 # install into a project you're starting:
-node scripts/install.ts /path/to/your-project --platform=claude,copilot
+node scripts/install.ts /path/to/your-project --platform=claude,copilot,augure
 
 # later, after Waypoint has changed:
-node scripts/update.ts /path/to/your-project --platform=claude,copilot
+node scripts/update.ts /path/to/your-project --platform=claude,copilot,augure
 
 # or remove everything Waypoint installed there:
 node scripts/uninstall.ts /path/to/your-project
@@ -111,7 +112,7 @@ clone of this repo.
 
 ## Using Waypoint for a new project
 
-1. Describe the idea to Claude or Copilot. Run the requirements pass (the
+1. Describe the idea to Claude, Copilot, or Augure. Run the requirements pass (the
    `start-project` Skill, or Copilot's `start-project.prompt.md`) to
    produce `website-spec.md` at repo root.
 2. Install Waypoint into that repo (see above).

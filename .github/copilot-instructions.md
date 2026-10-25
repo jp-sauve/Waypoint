@@ -6,9 +6,9 @@ distributable prompts/instructions live under `methodology/` and `commands/`, an
 built into installable form by `pnpm build`, not loaded live while this repo is open.
 See `docs/restructure-plan.md` for why this separation exists and how the build works.
 
-This mirrors `CLAUDE.md`, written for Claude Code. Both files describe developing the
-toolkit, not conventions for a project *using* Waypoint — if you edit one, update the
-other to match.
+This mirrors `CLAUDE.md`, written for Claude Code, and `AGENTS.md`, written for Augure.
+All three files describe developing the toolkit, not conventions for a project *using*
+Waypoint — if you edit one, update the others to match.
 
 ## Where things live
 
@@ -19,8 +19,9 @@ other to match.
   or name in these files.
 - `manifest.yaml` — the artifact registry: what each artifact is, which platforms it
   targets, where it installs, and the token resolution table.
-- `adapters/claude/build.ts` and `adapters/copilot/build.ts` — pure transforms from
-  canonical source to each platform's shape. No methodology content originates here.
+- `adapters/claude/build.ts`, `adapters/copilot/build.ts`, and `adapters/augure/build.ts`
+  — pure transforms from canonical source to each platform's shape. No methodology
+  content originates here.
 - `scripts/build.ts`, `scripts/install.ts`, `scripts/update.ts`, `scripts/uninstall.ts`
   — the CLI. `build.ts` writes `dist/`; the other three read/write a consumer repo
   (or, for global artifacts, a Claude home directory).

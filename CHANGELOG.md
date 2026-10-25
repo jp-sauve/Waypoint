@@ -140,3 +140,13 @@ and migration record.
   `.claude/skills/project-planner/**`, which was needed only because developing the
   toolkit meant editing its own live Claude Skill configuration. No longer applicable
   once canonical source moved to `methodology/`.
+# 0.7.0
+
+- Added Augure as an install target. `waypoint install --platform=augure` writes
+  `AGENTS.md` and `.augure/commands/**` to a consumer repository, installs the
+  start, extend, and planner skills globally under `~/.augure/skills/**`, and shares
+  the same `.waypoint/**` references as Claude and Copilot installs.
+- Augure is included in the default platform set for CLI install and update commands.
+- Global uninstall and update handling now recognizes both Claude and Augure global
+  install records.
+- Updated documentation and toolkit development guidance for the third platform.

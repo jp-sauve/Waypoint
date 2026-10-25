@@ -1,6 +1,7 @@
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { globalRecordPath, install, projectRecordPath, report, type InstallOptions, type InstallSummary } from "./install.js";
+import { globalRecordPaths, install, projectRecordPath, report, type InstallOptions, type InstallSummary } from "./install.js";
+import { DEFAULT_PLATFORMS } from "../adapters/lib/manifest.js";
 import { readRecord } from "../adapters/lib/installRecord.js";
 import { loadManifest } from "../adapters/lib/manifest.js";
 import path from "node:path";
@@ -18,7 +19,7 @@ export function update(options: InstallOptions): InstallSummary {
   const manifest = loadManifest(manifestPath);
 
   const hasProjectRecord = Boolean(readRecord(projectRecordPath(options.targetDir)));
-  const hasGlobalRecord = Boolean(readRecord(globalRecordPath(manifest, globalHome)));
+  const hasGlobalRecord = globalRecordPaths(manifest, globalHome).some((recordPath) => readRecord(recordPath));
 
   if (!hasProjectRecord && !hasGlobalRecord) {
     throw new Error(
@@ -37,11 +38,11 @@ function main(): void {
   const globalHome = args.find((a) => a.startsWith("--global-home="))?.slice("--global-home=".length);
 
   if (!targetDir) {
-    console.error("Usage: tsx scripts/update.ts <targetDir> [--platform=claude,copilot] [--force]");
+    console.error("Usage: tsx scripts/update.ts <targetDir> [--platform=claude,copilot,augure] [--force]");
     process.exit(1);
   }
 
-  const platforms = (platformArg?.split(",") ?? ["claude", "copilot"]) as InstallOptions["platforms"];
+  const platforms = (platformArg?.split(",") ?? DEFAULT_PLATFORMS) as InstallOptions["platforms"];
   report(update({ targetDir, platforms, force, globalHome }));
 }
 

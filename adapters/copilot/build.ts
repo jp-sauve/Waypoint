@@ -14,7 +14,7 @@ export function buildCopilot(manifest: Manifest, canonicalRoot: string): BuiltFi
   // Copilot has no global/user-level install mechanism at all (see manifest.yaml's
   // platforms.copilot.globalInstallSupported: false) — every artifact installs
   // per-project for Copilot, regardless of what installScope says for Claude.
-  const copilotSupportsGlobal = manifest.platforms.copilot.globalInstallSupported;
+  const copilotSupportsGlobal = manifest.platforms.copilot!.globalInstallSupported;
   const scopeDirOf = (installScope: "global" | "project") =>
     installScope === "global" && copilotSupportsGlobal ? "global" : "project";
 

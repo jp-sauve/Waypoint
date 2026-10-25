@@ -27,10 +27,16 @@ describe("toolkit source / installed-config separation", () => {
   it("CLAUDE.md and .github/copilot-instructions.md describe developing the toolkit, not a downstream project", () => {
     const files = readdirSync(repoRoot);
     expect(files).toContain("CLAUDE.md");
+    expect(files).toContain("AGENTS.md");
     // Both files exist and are dev-only — see their own content for the "developing
     // Waypoint itself" framing; this test only guards their continued presence at
     // these exact paths, since their content is free-form prose not worth pinning.
     expect(existsSync(path.join(repoRoot, ".github", "copilot-instructions.md"))).toBe(true);
+  });
+
+  it("keeps the toolkit's own .augure directory free of distributable skills and commands", () => {
+    expect(existsSync(path.join(repoRoot, ".augure", "skills"))).toBe(false);
+    expect(existsSync(path.join(repoRoot, ".augure", "commands"))).toBe(false);
   });
 
   it("canonical source lives only under methodology/ and commands/, never under .claude or .github", () => {

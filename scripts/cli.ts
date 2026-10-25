@@ -3,11 +3,12 @@ import { build } from "./build.js";
 import { install, report, type InstallOptions } from "./install.js";
 import { update } from "./update.js";
 import { uninstall } from "./uninstall.js";
+import { DEFAULT_PLATFORMS } from "../adapters/lib/manifest.js";
 
 const USAGE = `Usage:
   waypoint build
-  waypoint install <targetDir> [--platform=claude,copilot] [--force] [--global-home=<dir>]
-  waypoint update  <targetDir> [--platform=claude,copilot] [--force] [--global-home=<dir>]
+  waypoint install <targetDir> [--platform=claude,copilot,augure] [--force] [--global-home=<dir>]
+  waypoint update  <targetDir> [--platform=claude,copilot,augure] [--force] [--global-home=<dir>]
   waypoint uninstall <targetDir> [--global] [--force] [--global-home=<dir>]`;
 
 function flag(args: string[], name: string): string | undefined {
@@ -19,7 +20,7 @@ export function main(argv: string[]): number {
 
   if (command === "build") {
     build();
-    console.log("Built dist/claude/** and dist/copilot/**");
+    console.log("Built dist/claude/**, dist/copilot/**, and dist/augure/**");
     return 0;
   }
 
@@ -29,7 +30,7 @@ export function main(argv: string[]): number {
       console.error(USAGE);
       return 1;
     }
-    const platforms = (flag(rest, "platform")?.split(",") ?? ["claude", "copilot"]) as InstallOptions["platforms"];
+    const platforms = (flag(rest, "platform")?.split(",") ?? DEFAULT_PLATFORMS) as InstallOptions["platforms"];
     const options: InstallOptions = {
       targetDir,
       platforms,
